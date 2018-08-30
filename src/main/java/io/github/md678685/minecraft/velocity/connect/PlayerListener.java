@@ -14,7 +14,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class PlayerListener implements Listener {
 
-    private static Class<? extends PlayerProfile> craftPlayerProfileClass = null;
+    private static ConstructorAccessor craftPlayerProfileConstructor = null;
 
     private final VelocityConnect connectPlugin;
 
@@ -22,20 +22,21 @@ public class PlayerListener implements Listener {
         this.connectPlugin = plugin;
     }
 
-    private static Class<? extends PlayerProfile> getCraftPlayerProfileClass() {
-        if (craftPlayerProfileClass == null) {
+    private static ConstructorAccessor getCraftPlayerProfileConstructor() {
+        if (craftPlayerProfileConstructor == null) {
             try {
-                craftPlayerProfileClass = Class.forName("com.destroystokyo.paper.profile.CraftPlayerProfile").asSubclass(PlayerProfile.class);
+                Class<? extends PlayerProfile> craftPlayerProfileClass = Class.forName("com.destroystokyo.paper.profile.CraftPlayerProfile").asSubclass(PlayerProfile.class);
+                craftPlayerProfileConstructor = Accessors.getConstructorAccessor(craftPlayerProfileClass, MinecraftReflection.getGameProfileClass());
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             }
         }
 
-        return craftPlayerProfileClass;
+        return craftPlayerProfileConstructor;
     }
 
-    private static ConstructorAccessor getCraftPlayerProfileConstructor() {
-        return Accessors.getConstructorAccessor(getCraftPlayerProfileClass(), MinecraftReflection.getGameProfileClass());
+    private static PlayerProfile getPlayerProfile(WrappedGameProfile profile) {
+        return (PlayerProfile) getCraftPlayerProfileConstructor().invoke(profile.getHandle());
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -49,7 +50,7 @@ public class PlayerListener implements Listener {
                 connectPlugin.getLogger().info("Failed to authenticate player: " + event.getName());
             } else {
                 connectPlugin.getLogger().info("Found profile for player: " + event.getName());
-                event.setPlayerProfile((PlayerProfile) getCraftPlayerProfileConstructor().invoke(profile.getHandle()));
+                event.setPlayerProfile(getPlayerProfile(profile));
                 return;
             }
         } else {
