@@ -77,12 +77,9 @@ public class VelocityPacketAdapter extends PacketAdapter {
         ByteBuf data = (ByteBuf) packet.getModifier().withType(ByteBuf.class).read(0);
         boolean success = data != null;
 
-        plugin.getLogger().info("ID: " + id);
-        plugin.getLogger().info("Success: " + success);
-
         if (success && messageIds.containsKey(id)) {
             String username = messageIds.get(id);
-            plugin.getLogger().info("Client understood packet and ID is valid");
+            plugin.getLogger().info("Packet understood and ID valid for player: " + username);
             messageIds.remove(id);
 
             CompletableFuture<WrappedGameProfile> future = new CompletableFuture<>();
