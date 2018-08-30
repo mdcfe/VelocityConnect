@@ -56,6 +56,9 @@ public class VelocityPacketAdapter extends PacketAdapter {
         String username = profile.getName();
         PacketContainer loginMessage = createLoginMessage(username);
 
+        // Prevent previous failed connections from authenticating the user
+        connnectPlugin.profileMap.remove(username);
+
         try {
             plugin.getLogger().info("Attempting to send Velocity message for player: " + username);
             protocolManager.sendServerPacket(event.getPlayer(), loginMessage);
