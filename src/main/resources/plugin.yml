@@ -1,0 +1,8 @@
+name: VelocityConnect
+version: ${project.version}
+main: io.github.md678685.minecraft.velocity.connect.VelocityConnect
+prefix: VelocityConnect
+load: STARTUP
+depend: [ProtocolLib]
+authors: [md678685]
+description: An experimental plugin for interacting with the Velocity proxy

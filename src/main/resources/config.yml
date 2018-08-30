@@ -1,0 +1,10 @@
+# VelocityConnect config file
+
+velocity:
+  # The forwarding secret specified in your Velocity config. (change this!)
+  forwarding_secret: 5up3r53cr3t
+
+connect:
+  # Should we allow unauthenticated connections?
+  # This includes both direct connections to the server and failures when decoding the proxy message.
+  allow_unauthenticated_connections: false
