@@ -52,18 +52,15 @@ public class VelocityPacketAdapter extends PacketAdapter {
      * @param event The ProtocolLib packet event.
      */
     private void onLoginStart(PacketEvent event) {
-        plugin.getLogger().info("Received PacketLoginInStart!");
-
         WrappedGameProfile profile = WrappedGameProfile.fromHandle(event.getPacket().getModifier().withType(MinecraftReflection.getGameProfileClass()).read(0));
         String username = profile.getName();
-        plugin.getLogger().info("Username: " + username);
         PacketContainer loginMessage = createLoginMessage(username);
 
         try {
+            plugin.getLogger().info("Attempting to send Velocity message for player: " + username);
             protocolManager.sendServerPacket(event.getPlayer(), loginMessage);
-            plugin.getLogger().info("Sent PacketLoginOutCustomPayload!");
         } catch (Exception e) {
-            plugin.getLogger().severe("Failed to send PacketLoginOutCustomPayload!");
+            plugin.getLogger().severe("Failed to send plugin message!");
             e.printStackTrace();
         }
     }
@@ -74,9 +71,6 @@ public class VelocityPacketAdapter extends PacketAdapter {
      * @param event The ProtocolLib packet event.
      */
     private void onLoginCustomPayload(PacketEvent event) {
-        plugin.getLogger().info("Received PacketLoginInCustomPayload!");
-        plugin.getLogger().info("Username: " + event.getPlayer().getName());
-
         PacketContainer packet = event.getPacket();
 
         int id = packet.getIntegers().read(0);
@@ -88,20 +82,17 @@ public class VelocityPacketAdapter extends PacketAdapter {
 
         if (success && messageIds.containsKey(id)) {
             String username = messageIds.get(id);
-            plugin.getLogger().info("Client understood packet, ID is valid");
+            plugin.getLogger().info("Client understood packet and ID is valid");
             messageIds.remove(id);
 
             CompletableFuture<WrappedGameProfile> future = new CompletableFuture<>();
             connnectPlugin.profileMap.put(username, future);
-            plugin.getLogger().info("Added CompletableFuture");
 
             handleVelocityPayload(event, data, future);
         }
     }
 
     private void handleVelocityPayload(PacketEvent event, ByteBuf payload, CompletableFuture<WrappedGameProfile> future) {
-        int initialReadable = payload.readableBytes();
-
         // Read the signature at the start of the payload
         byte[] sig = new byte[32];
         payload.readBytes(sig, 0, 32);
