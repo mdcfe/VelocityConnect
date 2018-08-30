@@ -8,20 +8,21 @@ import java.util.Arrays;
 
 public class HashUtil {
 
-    public static boolean verifySignature(String secret, byte[] data, byte[] sig) {
-        System.out.println("Started generating hash... ");
+    public static byte[] genSignature(String secret, byte[] data) {
         try {
             SecretKey key = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
             Mac mac = Mac.getInstance("HmacSHA256");
             mac.init(key);
             mac.update(data);
-            byte[] dataSig = mac.doFinal();
-            System.out.println("Finished generating hash!");
-            return Arrays.equals(dataSig, sig);
+            return mac.doFinal();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return false;
+        return null;
+    }
+
+    public static boolean verifySignature(String secret, byte[] data, byte[] sig) {
+        return Arrays.equals(genSignature(secret, data), sig);
     }
 
 }
