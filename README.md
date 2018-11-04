@@ -1,3 +1,8 @@
+**Paper 1.13.2 and above now contains built-in [Velocity support](https://velocity.readthedocs.io/en/latest/users/player-info-forwarding.html#paper)!**
+As a result, this plugin is now completely redundant and unsupported.
+
+---
+
 # VelocityConnect
 
 A plugin for Paper 1.13+ servers, enabling modern forwarding with [Velocity](https://github.com/astei/velocity).
